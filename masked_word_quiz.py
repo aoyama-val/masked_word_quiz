@@ -4,7 +4,7 @@
 import random
 from pprint import pprint
 
-class WordQuiz:
+class MaskedWordQuiz:
     def __init__(self):
         self.words = []
         pass
@@ -22,7 +22,7 @@ class WordQuiz:
         pass
 
     def load_words(self):
-        f = open("words")
+        f = open("words.txt")
         self.words = f.read().splitlines()
         f.close()
 
@@ -30,24 +30,14 @@ class WordQuiz:
         """問題を作成する"""
         word = random.choice(self.words)
         word = word.strip()
-        masked = WordQuiz.mask_word(word)
+        masked = MaskedWordQuiz.mask_word(word)
         return [word, masked]
 
     def get_correct_answers(self, masked):
         """maskedにマッチする全単語のリストを返す"""
         answers = []
         for word in self.words:
-            if len(masked) != len(word):
-                is_match = False
-            else:
-                is_match = True
-                i = 0
-                for c in masked:
-                    if c != "*" and c != word[i]:
-                        is_match = False
-                        break
-                    i += 1
-            if is_match:
+            if len(masked) == len(word) and all((masked[i] == "*" or masked[i] == word[i]) for i in range(len(masked))):
                 answers.append(word)
         return answers
 
@@ -78,11 +68,10 @@ class WordQuiz:
 
 
 if __name__ == '__main__':
-    a = WordQuiz()
+    a = MaskedWordQuiz()
     a.load_words()
     for i in xrange(10):
         pprint(a.make_problem())
     #for w in a.words:
         #print a.is_correct(w)
-    print("lakjd")
     pprint(a.get_correct_answers("**n"))
